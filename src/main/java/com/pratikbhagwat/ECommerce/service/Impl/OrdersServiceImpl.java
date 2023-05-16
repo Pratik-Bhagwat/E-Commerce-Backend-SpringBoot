@@ -6,10 +6,7 @@ import com.pratikbhagwat.ECommerce.Dto.Response.OrderResponseDto;
 import com.pratikbhagwat.ECommerce.Transformers.ItemTransformer;
 import com.pratikbhagwat.ECommerce.Transformers.OrdersTransformer;
 import com.pratikbhagwat.ECommerce.entity.*;
-import com.pratikbhagwat.ECommerce.exception.InvalidCardException;
-import com.pratikbhagwat.ECommerce.exception.OrderDoesNotExistsException;
-import com.pratikbhagwat.ECommerce.exception.ProductNotFoundException;
-import com.pratikbhagwat.ECommerce.exception.UserNotFoundException;
+import com.pratikbhagwat.ECommerce.exception.*;
 import com.pratikbhagwat.ECommerce.repository.CardRepository;
 import com.pratikbhagwat.ECommerce.repository.OrdersRepository;
 import com.pratikbhagwat.ECommerce.repository.ProductRepository;
@@ -115,7 +112,7 @@ public class OrdersServiceImpl implements OrdersService {
 
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("sendingspringemails@gmail.com");
+        message.setFrom("shopwaveservice@gmail.com");
         message.setTo(user.getEmailId());
         message.setSubject(subject);
         message.setText(text);
@@ -224,5 +221,31 @@ public class OrdersServiceImpl implements OrdersService {
         maskedCardNo += cardNo.substring(cardNo.length()-4);
         return maskedCardNo;
 
+    }
+    public Orders placeOrder(User user,Card card) throws ProductOutOfStockException {
+        Cart cart = user.getCart();
+
+        Orders order = new Orders();
+        order.setOrderNo(String.valueOf(UUID.randomUUID()));
+        order.setCardUsed(generateMaskedCard(card.getCardNo()));
+        order.setUser(user);
+
+        List<Item> orderedItems = new ArrayList<>();
+        for(Item item: cart.getItems()){
+            try{
+                productService.decreaseProductQuantity(item);
+                orderedItems.add(item);
+            } catch (Exception e) {
+                throw new ProductOutOfStockException("Product Out of stock");
+            }
+        }
+        order.setItems(orderedItems);
+
+        for (Item item: orderedItems) {
+            item.setOrders(order);
+        }
+
+        order.setTotalCost(cart.getTotalCost());
+        return order;
     }
 }

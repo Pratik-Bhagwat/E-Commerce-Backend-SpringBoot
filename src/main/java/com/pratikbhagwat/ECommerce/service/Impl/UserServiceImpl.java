@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("sendingspringemails@gmail.com");
+        message.setFrom("shopwaveservice@gmail.com");
         message.setTo(user.getEmailId());
         message.setSubject(subject);
         message.setText(text);

@@ -8,7 +8,6 @@ import com.pratikbhagwat.ECommerce.exception.ThereIsNoUserWithThisCardTypeExcept
 import com.pratikbhagwat.ECommerce.exception.UserAlreadyExistException;
 import com.pratikbhagwat.ECommerce.exception.UserNotFoundException;
 import com.pratikbhagwat.ECommerce.service.UserService;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
